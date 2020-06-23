@@ -4,7 +4,7 @@ require('./models/UrlShorten');
 const routes = require('./routes');
 
 // db connect
-const mongoURI = "mongodb://localhost/url-shortner";
+const mongoURI = process.env.MONGODB_URI || "mongodb://localhost/url-shortner";
 
 // const connectOptions = {
 //     keepAlive: true,

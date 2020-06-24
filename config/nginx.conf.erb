@@ -39,11 +39,11 @@ http {
 	sendfile on;
 
 	server {
-		listen 80;
+		listen <%= ENV["PORT"] %>;
  	    index index.html;
  	    server_name _;
  	    location ~* "^/[0-9a-z@]{5,15}$"  {
-    	rewrite ^/(.*)$ http://localhost:7000/api/item/$1 redirect;
+    	rewrite ^/(.*)$ https://nginx-url.herokuapp.com/api/item/$1 redirect;
  	    }
 	}
 }

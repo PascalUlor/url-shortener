@@ -1,7 +1,12 @@
 import React, { Component } from "react";
+import axios from 'axios';
 import "./Landing.css";
 import { createShortUrl } from "../../APIHelper";
 import constants from "../../config/constants";
+
+const API_URL = `https://remoteroofbe.herokuapp.com/api/pdf`;
+const url = `https://news.ycombinator.com/`
+const localUrl = window.location.origin;
 class Landing extends Component {
   constructor() {
     super();
@@ -21,12 +26,40 @@ class Landing extends Component {
     };
     this.handleUserInput = this.handleUserInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSave = this.handleSave.bind(this);
+    this.handlePdf = this.handlePdf.bind(this)
   }
   handleUserInput(e) {
     const name = e.target.name;
     const value = e.target.value;
     this.setState({ [name]: value });
   }
+  handlePdf(){
+    return axios.get(`${API_URL}/?url=${url}`, {
+      responseType: 'arraybuffer',
+      headers: {
+        'Accept': 'application/pdf'
+      }
+    });
+  }
+
+  async handleSave(){
+    try {
+      const todayDate = new Date();
+      const pdfName = `${todayDate.getTime()}_Remote_Roofing_Report.pdf`;
+        const response = await this.handlePdf() // API call
+          ;
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = pdfName;
+        link.click();
+      }
+      catch (err) {
+        return console.log('>>>>>>', err);
+      }
+  }
+   
   handleSubmit() {
     this.setState({ clickSubmit: true, showApiError: false });
     if (this.state.clickSubmit && this.state.originalUrl) {
@@ -124,6 +157,9 @@ class Landing extends Component {
           disabled
         />
         {this.renderButton()}
+        <button onClick={this.handleSave }>
+          PRINT PDF
+        </button>
         {this.state.showApiError && (
           <div className="shorten-error">{this.state.apiError}</div>
         )}
